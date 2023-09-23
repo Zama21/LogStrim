@@ -1,6 +1,6 @@
 let a = Math.floor(Math.random() * 100);
 
-a = 11;
+// a = 11;
 console.log(
   (a > 10 ? a : a * 2) > 5
     ? 2 * a + 1
