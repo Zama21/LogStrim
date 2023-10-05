@@ -4,8 +4,102 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Calculate</title>
-		<script src="./js.js"></script>
+
 		<link rel="stylesheet" href="./css.css" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap"
+			rel="stylesheet"
+		/>
 	</head>
-	<body></body>
+	<body>
+		<div class="page">
+			<section class="section_1">
+				<div class="wrap-section_1">
+					<!-- <h1 class="h1-title title-calculate">Примитивный калькулятор</h1> -->
+					<div class="calculate-wrap">
+						<div class="input-calc-wrap">
+							<input class="input-calc" type="text" value="" />
+							<div class="error-title-calc">Некорректное выражение!</div>
+						</div>
+						<div class="wrap-main-command-calc">
+							<button
+								class="command-calc command-calc-AC"
+								type="button"
+								value="AC"
+							>
+								AC
+							</button>
+							<button
+								class="command-calc command-calc-operation"
+								value="bracket"
+								type="button"
+							>
+								()
+							</button>
+							<button
+								class="command-calc command-calc-operation"
+								value="%"
+								type="button"
+							>
+								%
+							</button>
+							<button
+								class="command-calc command-calc-operation"
+								value="/"
+								type="button"
+							>
+								&divide;
+							</button>
+							<button class="command-calc" type="button" value="7">7</button>
+							<button class="command-calc" type="button" value="8">8</button>
+							<button class="command-calc" type="button" value="9">9</button>
+							<button
+								class="command-calc command-calc-operation"
+								type="button"
+								value="*"
+							>
+								&times;
+							</button>
+							<button class="command-calc" type="button" value="4">4</button>
+							<button class="command-calc" type="button" value="5">5</button>
+							<button class="command-calc" type="button" value="6">6</button>
+							<button
+								class="command-calc command-calc-operation"
+								type="button"
+								value="-"
+							>
+								-
+							</button>
+							<button class="command-calc" type="button" value="1">1</button>
+							<button class="command-calc" type="button" value="2">2</button>
+							<button class="command-calc" type="button" value="3">3</button>
+							<button
+								class="command-calc command-calc-operation"
+								type="button"
+								value="+"
+							>
+								+
+							</button>
+							<button class="command-calc" type="button" value="0">0</button>
+							<button class="command-calc" type="button" value=".">,</button>
+							<button class="command-calc" type="button" value="DEL">
+								DEL
+							</button>
+							<button
+								class="command-calc command-calc-operation"
+								type="button"
+								value="="
+							>
+								=
+							</button>
+						</div>
+						<div class="history-of-actions"></div>
+					</div>
+				</div>
+			</section>
+		</div>
+		<script src="js.js"></script>
+	</body>
 </html>
