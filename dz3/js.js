@@ -4,10 +4,20 @@ let calcHistoryItem = document.querySelectorAll('.item-history-of-actions-btn')
 let historyOfActions = document.querySelector('.history-of-actions')
 let calcMessage = document.querySelector('.calc-message')
 
+let setSymbolAll = new Set(['+', '-', '*', '/', '%'])
 let setOperations = new Set(['+', '*', '/', '%', ','])
 let setOperationsAll = new Set(['+', '-', '*', '/', '%', ','])
 let setBracketsAll = new Set(['(', ')'])
 let setBracketsOpen = new Set(['('])
+
+let priorOperant = {
+	'(': 0,
+	'+': 1,
+	'-': 1,
+	'*': 2,
+	'/': 2,
+	'%': 2,
+}
 
 function calcShowMessage(message) {
 	calcMessage.classList.add('calc-message-show')
@@ -36,7 +46,6 @@ function calcInsert(word, inp) {
 		inp.value.substring(0, start) +
 		word +
 		inp.value.substring(inp.selectionEnd, inp.value.length)
-	// inp.focus()
 	inp.setSelectionRange(start + 1, start + word.length)
 }
 
@@ -45,16 +54,97 @@ function calcDelete(countSymbol, inp) {
 	inp.value =
 		inp.value.substring(0, start - countSymbol) +
 		inp.value.substring(inp.selectionEnd, inp.value.length)
-	// inp.focus()
 	inp.setSelectionRange(start - countSymbol, start - countSymbol)
 }
 
 function previousValue(inp, count) {
-	// console.log('=====================')
-	// console.log(inp.selectionStart - 1)
-	// console.log(inp.value[inp.selectionStart - 1])
-	// console.log('=====================')
 	return inp.value[inp.selectionStart - count]
+}
+
+function checkPriorStack(arr, prior) {
+	for (var i = arr.length - 1; i >= 0; i--) {
+		if (arr[i] == '(') return true
+		if (priorOperant[arr[i]] < prior) {
+			continue
+		} else return false
+	}
+	return true
+}
+function polishRecord(str) {
+	let arr = []
+	let newStr = ''
+	let stack = []
+	let resultArr = []
+	let k = 0
+
+	for (item of str) {
+		if (
+			(!setSymbolAll.has(item) ||
+				((str[k - 1] == undefined || setBracketsOpen.has(str[k - 1])) &&
+					item == '-') ||
+				setSymbolAll.has(str[k - 1])) &&
+			!setBracketsAll.has(item)
+		) {
+			newStr += item
+		} else {
+			newStr != '' ? arr.push(newStr) : ''
+			arr.push(item)
+			newStr = ''
+		}
+		k++
+	}
+	newStr != '' ? arr.push(newStr) : ''
+
+	for (item of arr) {
+		if (!setOperationsAll.has(item) && !setBracketsAll.has(item)) {
+			resultArr.push(item)
+		} else if (setOperationsAll.has(item)) {
+			if (checkPriorStack(stack, priorOperant[item])) {
+				stack.push(item)
+			} else {
+				while (priorOperant[stack[stack.length - 1]] >= priorOperant[item]) {
+					resultArr.push(stack.pop())
+				}
+				if (checkPriorStack(stack, priorOperant[item])) {
+					stack.push(item)
+				}
+			}
+		} else if (setBracketsOpen.has(item)) {
+			stack.push(item)
+		} else if (setBracketsAll.has(item)) {
+			let indLastBracket = stack.lastIndexOf('(')
+
+			while (stack.length - 1 > indLastBracket) {
+				resultArr.push(stack.pop())
+			}
+			stack.pop()
+		}
+	}
+	while (stack.length > 0) {
+		resultArr.push(stack.pop())
+	}
+	return resultArr
+}
+const operators = {
+	'+': (x, y) => x + y,
+	'-': (x, y) => x - y,
+	'*': (x, y) => x * y,
+	'/': (x, y) => x / y,
+	'%': (x, y) => x % y,
+}
+function evalPolishRecord(arr) {
+	let stack = []
+
+	arr.forEach(token => {
+		if (token in operators) {
+			let [y, x] = [stack.pop(), stack.pop()]
+			stack.push(operators[token](x, y))
+		} else {
+			stack.push(parseFloat(token))
+		}
+	})
+
+	return stack.pop()
 }
 
 function regExpForCalc(string) {
@@ -62,14 +152,20 @@ function regExpForCalc(string) {
 	str = str.replace(/\)([\d\(])/g, ')*$1')
 	str = str.replace(/[^-()\d/*+,%]/gi, '')
 	str = str.replace(/[,]/gi, '.')
+	let polisStr = polishRecord(str)
 	let result
 	try {
-		result = eval(str)
+		// result = eval(str)
+		result = evalPolishRecord(polisStr)
 	} catch (err) {
 		calcShowMessage('Некорректное выражение!')
 		return false
 	}
 	if (result == undefined) return false
+	if (Number.isNaN(result)) {
+		calcShowMessage('Некорректное выражение!')
+		return false
+	}
 	calcShowMessage(result)
 	return result
 }
@@ -87,7 +183,6 @@ function CheckComma() {
 		) {
 			return true
 		}
-		// console.log(previousValue(inputCalc, i))
 		i++
 	}
 	return true
@@ -160,17 +255,6 @@ function addCalcAction(act) {
 			} else {
 				calcInsert(act, inputCalc)
 			}
-
-			// if (
-			// 	(previousValue(inputCalc, 1) == undefined ||
-			// 		setBracketsOpen.has(previousValue(inputCalc, 1))) &&
-			// 	setOperationsAll.has(act) &&
-			// 	act != '-'
-			// ) {
-			// 	// console.log(previousValue(inputCalc, 1))
-			// } else {
-			// 	calcInsert(act, inputCalc)
-			// }
 		}
 	}
 }
