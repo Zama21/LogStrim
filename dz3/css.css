@@ -69,7 +69,7 @@ body {
 	/* overflow: scroll; */
 	width: 100%;
 	color: white;
-	font-size: clamp(1rem, 10vw, 2.5rem);
+	font-size: clamp(1rem, 10vw, 1.5rem);
 	/* font-size: 60px; */
 	min-height: 100px;
 	background-color: #38393d;
@@ -178,6 +178,6 @@ body {
 	cursor: pointer;
 	top: 50%;
 	transform: translate(0, -50%);
-	font-size: clamp(1rem, 10vw, 3rem);
+	font-size: clamp(1rem, 10vw, 1.5rem);
 	color: white;
 }
