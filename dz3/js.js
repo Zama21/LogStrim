@@ -2,10 +2,33 @@ let commandCalc = document.querySelectorAll('.command-calc')
 let inputCalc = document.querySelector('.input-calc')
 let calcHistoryItem = document.querySelectorAll('.item-history-of-actions-btn')
 let historyOfActions = document.querySelector('.history-of-actions')
+let calcMessage = document.querySelector('.calc-message')
 
-let setOperations = new Set(['+', '-', '*', '/', '%', ','])
-let setOperationsAll = new Set(['+', '-', '*', '/', '%', ',', '(', ')'])
+let setOperations = new Set(['+', '*', '/', '%', ','])
+let setOperationsAll = new Set(['+', '-', '*', '/', '%', ','])
+let setBracketsAll = new Set(['(', ')'])
 let setBracketsOpen = new Set(['('])
+
+function calcShowMessage(message) {
+	calcMessage.classList.add('calc-message-show')
+	inputCalc.classList.add('input-calc-show-message')
+	calcMessage.innerText = message
+	// calcMessage.style.opacity = 1
+	// calcMessage.style.transform = 'translateY(0%)'
+	// calcMessage.innerText = message
+	// let str = inputCalc.style.minHeight.replace(/[^\d]/gi, '')
+	// //let str = getComputedStyle(inputCalc).minHeight.replace(/[^\d]/gi, '')
+	// inputCalc.style.cssText = `min-height: ${+str * 1.2 + 'px'}`
+}
+
+function calcHideMessage() {
+	calcMessage.classList.remove('calc-message-show')
+	inputCalc.classList.remove('input-calc-show-message')
+	// calcMessage.style.opacity = 0
+	// calcMessage.style.transform = 'translateY(100%)'
+	// // inputCalc.style.removeProperty('min-height')
+	// inputCalc.style.cssText = `min-height: 100px`
+}
 
 function calcInsert(word, inp) {
 	let start = inp.selectionStart
@@ -13,7 +36,7 @@ function calcInsert(word, inp) {
 		inp.value.substring(0, start) +
 		word +
 		inp.value.substring(inp.selectionEnd, inp.value.length)
-	inp.focus()
+	// inp.focus()
 	inp.setSelectionRange(start + 1, start + word.length)
 }
 
@@ -22,12 +45,16 @@ function calcDelete(countSymbol, inp) {
 	inp.value =
 		inp.value.substring(0, start - countSymbol) +
 		inp.value.substring(inp.selectionEnd, inp.value.length)
-	inp.focus()
+	// inp.focus()
 	inp.setSelectionRange(start - countSymbol, start - countSymbol)
 }
 
-function previousValue(inp) {
-	return inp.value[inp.selectionStart - 1]
+function previousValue(inp, count) {
+	// console.log('=====================')
+	// console.log(inp.selectionStart - 1)
+	// console.log(inp.value[inp.selectionStart - 1])
+	// console.log('=====================')
+	return inp.value[inp.selectionStart - count]
 }
 
 function regExpForCalc(string) {
@@ -39,25 +66,41 @@ function regExpForCalc(string) {
 	try {
 		result = eval(str)
 	} catch (err) {
-		let errorMessage = document.querySelector('.error-title-calc')
-		errorMessage.style.opacity = 1
-		errorMessage.style.transform = 'translateY(0%)'
-
-		let str = getComputedStyle(inputCalc).minHeight.replace(/[^\d]/gi, '')
-		inputCalc.style.cssText = `min-height: ${+str + +str * 0.2 + 'px'}`
+		calcShowMessage('Некорректное выражение!')
 		return false
 	}
+	if (result == undefined) return false
+	calcShowMessage(result)
 	return result
 }
-
+function CheckComma() {
+	let i = 2
+	while (
+		previousValue(inputCalc, i) != undefined &&
+		i < inputCalc.selectionStart
+	) {
+		if (previousValue(inputCalc, i) == ',') {
+			return false
+		} else if (
+			setOperationsAll.has(previousValue(inputCalc, i)) ||
+			setBracketsAll.has(previousValue(inputCalc, i))
+		) {
+			return true
+		}
+		// console.log(previousValue(inputCalc, i))
+		i++
+	}
+	return true
+}
 function addCalcAction(act) {
+	inputCalc.focus()
 	switch (act) {
 		case 'DEL':
 			calcDelete(1, inputCalc)
 			break
 		case 'bracket':
 			{
-				if (previousValue(inputCalc) != ',') {
+				if (previousValue(inputCalc, 1) != ',') {
 					calcInsert('()', inputCalc)
 					let start = inputCalc.selectionStart
 					inputCalc.setSelectionRange(start, start)
@@ -67,7 +110,7 @@ function addCalcAction(act) {
 		case '=':
 			{
 				let res = regExpForCalc(inputCalc.value)
-				if (res) {
+				if (res !== false) {
 					const container = document.createElement('div')
 					container.addEventListener('click', function (event) {
 						calcInputAddEval(event.target.innerText)
@@ -85,8 +128,10 @@ function addCalcAction(act) {
 			break
 		case '.':
 			if (
-				!(previousValue(inputCalc) == undefined) &&
-				!setOperationsAll.has(previousValue(inputCalc))
+				CheckComma() &&
+				!(previousValue(inputCalc, 1) == undefined) &&
+				!setOperationsAll.has(previousValue(inputCalc, 1)) &&
+				!setBracketsAll.has(previousValue(inputCalc, 1))
 			) {
 				calcInsert(',', inputCalc)
 			}
@@ -96,20 +141,36 @@ function addCalcAction(act) {
 			inputCalc.value = ''
 			break
 		default: {
-			if (setOperations.has(act)) {
-				if (setOperations.has(previousValue(inputCalc))) {
+			if (setOperationsAll.has(act)) {
+				if (
+					setOperationsAll.has(previousValue(inputCalc, 1)) &&
+					previousValue(inputCalc, 2) != undefined
+				) {
 					calcDelete(1, inputCalc)
+					calcInsert(act, inputCalc)
+				} else if (act == '-') {
+					calcInsert(act, inputCalc)
+				} else if (
+					previousValue(inputCalc, 1) != undefined &&
+					previousValue(inputCalc, 1) != '-' &&
+					!setBracketsOpen.has(previousValue(inputCalc, 1))
+				) {
+					calcInsert(act, inputCalc)
 				}
-			}
-			if (
-				(previousValue(inputCalc) == undefined ||
-					setBracketsOpen.has(previousValue(inputCalc))) &&
-				setOperations.has(act)
-			) {
-				console.log('WWWWWWWWWWWWWWWWWWWWWWW')
 			} else {
 				calcInsert(act, inputCalc)
 			}
+
+			// if (
+			// 	(previousValue(inputCalc, 1) == undefined ||
+			// 		setBracketsOpen.has(previousValue(inputCalc, 1))) &&
+			// 	setOperationsAll.has(act) &&
+			// 	act != '-'
+			// ) {
+			// 	// console.log(previousValue(inputCalc, 1))
+			// } else {
+			// 	calcInsert(act, inputCalc)
+			// }
 		}
 	}
 }
@@ -129,10 +190,4 @@ for (item of calcHistoryItem) {
 	})
 }
 
-inputCalc.addEventListener('focus', () => {
-	let errorMessage = document.querySelector('.error-title-calc')
-	errorMessage.style.opacity = 0
-	errorMessage.style.transform = 'translateY(100%)'
-
-	inputCalc.style.removeProperty('min-height')
-})
+inputCalc.addEventListener('focus', calcHideMessage)

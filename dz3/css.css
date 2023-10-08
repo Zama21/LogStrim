@@ -44,12 +44,12 @@ body {
 	font-size: clamp(0.5rem, 10vw, 3rem);
 }
 .calculate-wrap {
-	max-width: 300px;
+	max-width: 400px;
 	min-height: 300px;
 	width: 100%;
 	margin: auto;
-	padding-top: 5%;
-	padding-bottom: 5%;
+	/* padding-top: 5%;
+	padding-bottom: 5%; */
 }
 
 .input-calc-wrap {
@@ -64,22 +64,29 @@ body {
 }
 
 .input-calc {
-	padding: 5%;
+	/* padding: 5%; */
+	padding-left: 5%;
 	/* overflow: scroll; */
 	width: 100%;
 	color: white;
 	font-size: clamp(1rem, 10vw, 3rem);
+	/* font-size: 60px; */
 	min-height: 100px;
 	background-color: #38393d;
 	transition: all 0.5s linear;
 }
 
-.error-title-calc {
+.input-calc-show-message {
+	min-height: 130px;
+}
+
+.calc-message {
 	/* display: none; */
 
 	transition: 0.5s linear all;
 	opacity: 0;
-	font-size: clamp(16px, 1vw, 20px);
+	font-size: clamp(1rem, 10vw, 1.3rem);
+	/* font-size: 2vw; */
 	position: absolute;
 	color: red;
 	bottom: 0;
@@ -87,6 +94,11 @@ body {
 	margin-bottom: 0.5%;
 	margin-right: 3%;
 	transform: translateY(100%);
+}
+
+.calc-message-show {
+	opacity: 1;
+	transform: translateY(0%);
 }
 
 .command-calc {
@@ -122,7 +134,7 @@ body {
 .history-of-actions {
 	width: 100%;
 	background-color: #38393d;
-	height: 150px;
+	height: 100px;
 	overflow-x: hidden;
 	overflow: auto;
 	border: 1px transparent solid;
@@ -152,7 +164,7 @@ body {
 	width: 95%;
 	margin: auto;
 	margin-top: 2.5%;
-	min-height: 100px;
+	min-height: 75px;
 	height: 1px;
 	background-color: #28282a;
 
