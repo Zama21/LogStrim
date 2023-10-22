@@ -1,10 +1,10 @@
 import Page from './components/Page'
 import MainHeader from './components/MainHeader'
 // import Footer from './components/Footer'
-import Content from 'components/Content'
+import Content from './components/Content'
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { addPostsToStore } from 'store/postsReducer'
+import { addPostsToStore } from './store/postsReducer'
 import { addUsersToStore } from './store/usersReducer'
 import Post from './components/Post'
 
